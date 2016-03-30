@@ -1,0 +1,7 @@
+#Deny access to all hidden files
+<Files ~ "^\.">
+    Deny from all
+</Files>
+<Directory "sql">
+    Deny from all
+</Directory>
