@@ -39,3 +39,42 @@ function check_auth_token() {
         send_status_code(401, 'Unauthorized');
     }
 }
+
+function get_db_connection() {
+    static $connection = null;
+
+    $connection_options = array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES \'UTF8\'');
+    $db_host = getenv('DB_HOST');
+    $db_name = getenv('DB_NAME');
+    $db_user = getenv('DB_USER');
+    $db_password = getenv('DB_PASSWORD');
+    if(!$connection) {
+        try {
+            $connection = new PDO("mysql:dbname=$db_name;host=$db_host", $db_user, $db_password, $connection_options);
+        } catch(\Exception $e) {
+            echo $e->getMessage();
+            send_status_code(500, 'Internal Server Error');
+        }
+    }
+
+    return $connection;
+}
+
+function db_query($query, $params = array()) {
+    $connection = get_db_connection();
+    $statement = $connection->prepare($query);
+    foreach($params as $param) {
+        $statement->bindParam($param['name'], $param['value'], $param['type']);
+    }
+    $statement->execute();
+
+    return $statement;
+}
+
+function db_fetch_all(PDOStatement $statement) {
+    if($statement) {
+        return $statement->fetchAll();
+    }
+
+    return array();
+}
