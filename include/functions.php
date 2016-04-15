@@ -156,12 +156,12 @@ function get_durantion_of_disconnection($start, $end = null) {
     return implode(' ', $duration_units);
 }
 
-function get_days_since_date($date) {
+function get_days_and_hours_since_date($date) {
     $start = new DateTime($date);
     $end = new DateTime();
     $diff = $start->diff($end);
     if($diff) {
-        return $diff->days;
+        return ['hours' => $diff->h, 'days' => $diff->days];
     }
 
     return 0;

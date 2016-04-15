@@ -23,7 +23,8 @@
                     <?php $duration_of_current_disconnection = get_durantion_of_disconnection($last_failure['start']); ?>
                     <p>Estamos sem conexão com a <?php echo $connection; ?> há <span class="ui blue small label"><?php echo $duration_of_current_disconnection;?></span>!</p>
                 <?php else: ?>
-                    <p>Estamos trabalhando há <span class="ui blue small label"><?php echo get_days_since_date($last_failure['end']); ?></span> dias sem uma queda de conexão da <?php echo $connection; ?></p>
+                    <?php $time_since_last_failure = get_days_and_hours_since_date($last_failure['end']); ?>
+                    <p>Estamos trabalhando há <span class="ui blue small label"><?php echo $time_since_last_failure['days'] ?: $time_since_last_failure['hours']; ?></span> <?php echo $time_since_last_failure['days'] ? 'dias' : 'horas'?> sem uma queda de conexão da <?php echo $connection; ?></p>
                 <?php endif; ?>
             </div>
             <div class="ui secondary blue segment">
