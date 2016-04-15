@@ -20,7 +20,8 @@ function load_environment_variables() {
             'DB_USER',
             'DB_PASSWORD',
             'AUTH_TOKEN',
-            'LAST_PING_THRESHOLD'
+            'LAST_PING_THRESHOLD',
+            'DATE_FORMAT'
         ]);
     } catch(\Exception $ex) {
         echo 'Não foi possível carregar as configurações';
@@ -78,4 +79,89 @@ function db_fetch_all(PDOStatement $statement) {
     }
 
     return array();
+}
+
+function db_fetch_row(PDOStatement $statement) {
+    if($statement) {
+        return $statement->fetch();
+    }
+
+    return [];
+}
+
+function get_distinct_connections() {
+    $query = 'SELECT id FROM ping';
+    $rows = db_fetch_all(db_query($query));
+    return array_column($rows, 'id');
+}
+
+function get_last_closed_failures_for_connection($connection, $limit = 5) {
+    $query = 'SELECT * FROM failure
+              WHERE connection = :connection AND end IS NOT NULL
+              ORDER BY id DESC
+              LIMIT :limit';
+    $params = [
+        [
+            'name'  => ':connection',
+            'value' => $connection,
+            'type'  => PDO::PARAM_STR
+        ],
+        [
+            'name'  => ':limit',
+            'value' => $limit,
+            'type'  => PDO::PARAM_INT
+        ]
+    ];
+    $result = db_query($query, $params);
+    return db_fetch_all($result);
+}
+
+function get_last_failure_for_connection($connection) {
+    $query = 'SELECT * FROM failure 
+              WHERE connection = :connection 
+              ORDER BY id DESC
+              LIMIT 1';
+    $params = [
+        [
+            'name'  => ':connection',
+            'value' => $connection,
+            'type'  => PDO::PARAM_STR
+        ]
+    ];
+
+    return db_fetch_row(db_query($query, $params));
+}
+
+function get_durantion_of_disconnection($start, $end = null) {
+    $start = strtotime($start);
+    $end = $end ?: 'now';
+    $end = strtotime($end);
+    $duration = $end - $start;
+    $duration_hours = (int)($duration / 3600);
+    $duration_minutes = (int)(($duration % 3600)/60);
+    $duration_seconds = (int)(($duration % 3600) % 60);
+
+    $duration_units = [];
+    if($duration_hours) {
+        $duration_units[] = "{$duration_hours}h";
+    }
+    if($duration_minutes) {
+        $duration_units[] = "{$duration_minutes}m";
+    }
+    if($duration_seconds) {
+        $duration_units[] = "{$duration_seconds}s";
+    }
+
+    return implode(' ', $duration_units);
+}
+
+function get_days_since_date($date) {
+    $start = new DateTime($date);
+    $end = new DateTime();
+    $diff = $start->diff($end);
+    if($diff) {
+        return $diff->days;
+    }
+
+    return 0;
 }
