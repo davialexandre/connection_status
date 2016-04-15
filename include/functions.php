@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__.'/../vendor/autoload.php';
 
 function send_status_code($status_code, $message) {
     header("HTTP/1.0 $status_code $message");

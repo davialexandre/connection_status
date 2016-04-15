@@ -1,5 +1,4 @@
 <?php
-require_once 'vendor/autoload.php';
 require_once 'include/functions.php';
 
 header('Content-Type: text/plain; charset=utf-8');
