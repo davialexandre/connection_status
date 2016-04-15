@@ -21,7 +21,8 @@ function load_environment_variables() {
             'DB_PASSWORD',
             'AUTH_TOKEN',
             'LAST_PING_THRESHOLD',
-            'DATE_FORMAT'
+            'DATE_FORMAT',
+            'FAILURES_LIST_SIZE'
         ]);
     } catch(\Exception $ex) {
         echo 'Não foi possível carregar as configurações';

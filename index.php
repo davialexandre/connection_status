@@ -28,7 +28,7 @@
             </div>
             <div class="ui secondary blue segment">
                 <div class="ui header">Últimas falhas registradas</div>
-                <?php $last_failures = get_last_closed_failures_for_connection($connection); ?>
+                <?php $last_failures = get_last_closed_failures_for_connection($connection, (int)getenv('FAILURES_LIST_SIZE')); ?>
                 <table class="ui compact small celled striped table">
                     <?php if(empty($last_failures)): ?>
                     <?php else: ?>
